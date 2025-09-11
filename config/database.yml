@@ -102,6 +102,16 @@ production:
     url: <%= ENV["DATABASE_URL"] %>
     pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
 
+  queue:
+    url: <%= ENV["DATABASE_URL"] %>
+    pool: 5
+    migrations_paths: db/queue_migrate
+
+  cache:
+    url: <%= ENV["DATABASE_URL"] %>
+    pool: 5
+    migrations_paths: db/cache_migrate
+
   cable:
     url: <%= ENV["DATABASE_URL"] %>
     pool: 5
