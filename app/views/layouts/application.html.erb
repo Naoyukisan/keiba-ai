@@ -32,27 +32,64 @@
    </head>
 
   <body>
+    <!-- モバイル用トップバー（md未満で表示） -->
+    <nav class="navbar navbar-dark bg-dark d-md-none">
+      <div class="container-fluid">
+        <button class="btn btn-outline-light" type="button"
+                data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar">
+          ☰ メニュー
+        </button>
+        <span class="navbar-brand ms-2">Keiba AI</span>
+      </div>
+    </nav>
+  
     <div class="d-flex">
-      <!-- 左側のメニュー -->
-      <div class="bg-dark text-white p-3" style="width: 250px; height: 100vh;">
-        <h5 class="mb-4">メニュー</h5>
-        <ul class="nav flex-column">
-          <li class="nav-item mb-2">
-            <a class="nav-link text-white" href="#">🏠 ホーム</a>
-          </li>
-          <li class="nav-item mb-2">
-            <a class="nav-link text-white" href="#">📊 予想</a>
-          </li>
-          <li class="nav-item mb-2">
-            <a class="nav-link text-white" href="#">📁 マイページ</a>
-          </li>
-        </ul>
+      <!-- サイドバー：md未満はOffcanvas、md以上は固定表示 -->
+      <div id="sidebar"
+           class="sidebar offcanvas-md offcanvas-start bg-dark text-white"
+           tabindex="-1" data-bs-scroll="true" data-bs-backdrop="false" style="width: 250px;">
+        <!-- Offcanvas ヘッダ（md未満で表示） -->
+        <div class="offcanvas-header d-md-none">
+          <h5 class="offcanvas-title">メニュー</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+  
+        <!-- 本体 -->
+        <div class="offcanvas-body p-3">
+          <h5 class="mb-3 d-none d-md-block">メニュー</h5>
+          <ul class="nav nav-pills flex-column gap-1">
+            <li class="nav-item">
+              <a class="nav-link text-white" href="#">🏠 ホーム</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="#">📊 予想</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="#">📁 マイページ</a>
+            </li>
+          </ul>
+        </div>
       </div>
-
-      <!-- 右側のコンテンツ -->
-      <div class="flex-grow-1 p-4">
-        <%= yield %>
-      </div>
+  
+      <!-- 右側コンテンツ：領域がわかる簡易デザイン -->
+      <main class="flex-grow-1 p-4 bg-body-tertiary border-start" style="min-height:100vh;">
+        <div class="container-fluid">
+          <h1 class="h4 mb-3">コンテンツ</h1>
+  
+          <div class="border rounded-3 p-4 bg-white">
+            <p class="mb-2">ここに各ページの内容が表示されます。</p>
+            <p class="text-muted small mb-4">（レイアウト確認用のダミーテキスト）</p>
+  
+            <div class="mt-2 p-5 border border-2 border-dashed rounded-3 text-center">
+              ⇨ コンテンツ領域
+            </div>
+  
+            <div class="mt-4">
+              <%= yield %>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   </body>
 </html>

@@ -10,3 +10,27 @@
  */
 
 @import "bootstrap";
+
+/* サイドバーのナビ色 */
+.sidebar .nav-link {
+    color: #fff;
+    opacity: .9;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    opacity: 1;
+    background: rgba(255, 255, 255, .12);
+}
+
+/* md以上でのサイドバー幅（保険） */
+@media (min-width: 768px) {
+    #sidebar {
+        width: 250px;
+    }
+}
+
+/* 破線ボーダー用（お好みで） */
+.border-dashed {
+    border-style: dashed !important;
+}
