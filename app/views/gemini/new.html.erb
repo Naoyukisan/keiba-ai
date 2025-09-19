@@ -1,0 +1,21 @@
+<h1 class="mb-3">Gemini サンプル</h1>
+
+<%= form_with url: gemini_path, method: :post, data: { turbo: false } do %>
+  <div>
+    <label for="prompt" class="block font-semibold mb-1">プロンプト</label>
+    <%= text_area_tag :prompt, @prompt, rows: 5, class: "w-full border p-2 rounded", placeholder: "ここに質問や指示を書いて Submit" %>
+  </div>
+  <%= submit_tag "送信", class: "px-4 py-2 rounded bg-blue-600 text-white" %>
+<% end %>
+
+<% if @answer.present? %>
+  <hr class="my-6">
+  <h2 class="font-semibold mb-2">レスポンス</h2>
+  <pre class="whitespace-pre-wrap p-3 bg-gray-100 rounded"><%= h(@answer) %></pre>
+<% end %>
+
+<% if @error.present? %>
+  <hr class="my-6">
+  <h2 class="font-semibold mb-2 text-red-600">エラー</h2>
+  <pre class="whitespace-pre-wrap p-3 bg-red-50 border border-red-200 rounded text-red-700"><%= h(@error) %></pre>
+<% end %>
