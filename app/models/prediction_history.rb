@@ -1,0 +1,2 @@
+class PredictionHistory < ApplicationRecord
+end

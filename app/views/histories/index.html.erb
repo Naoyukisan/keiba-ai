@@ -1,0 +1,37 @@
+<h2>予想履歴</h2>
+
+<div class="row g-4 align-items-start">
+  <!-- 左：履歴一覧 -->
+  <div class="col-12 col-lg-3">
+    <div class="list-group" style="max-height: 70vh; overflow-y: auto;">
+<% @histories.each do |h| %>
+  <%= link_to history_path(h),
+        class: "list-group-item list-group-item-action",
+        data: { turbo_frame: "history_detail" } do %>
+
+    <!-- 1行目：レース名（太字・省略対応） -->
+    <div class="fw-bold text-truncate">
+      <%= h.race_name.presence || "レース名なし" %>
+    </div>
+
+    <!-- 2行目：レース日付（なくても崩れない） -->
+    <small class="text-muted">
+      <%= h.race_date&.strftime("%Y/%m/%d") || "レース日付なし" %>
+    </small>
+  <% end %>
+<% end %>
+
+    </div>
+  </div>
+
+  <!-- 右：結果表示（Turbo Frame領域） -->
+  <div class="col-12 col-lg-9">
+    <%= turbo_frame_tag "history_detail" do %>
+      <% if @histories.any? %>
+        <%= render partial: "detail", locals: { history: @histories.first } %>
+      <% else %>
+        <p>まだ予想履歴がありません。</p>
+      <% end %>
+    <% end %>
+  </div>
+</div>

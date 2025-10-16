@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  get "histories/index"
+  get "histories/show"
+  devise_for :users
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -14,12 +17,14 @@ Rails.application.routes.draw do
   # フォームをトップに
   root "gemini#new"
 
-  # ★ここがポイント：controller: "gemini" を明示する
-  resource :gemini, controller: "gemini", only: [:new, :create]
+  resource :gemini, only: %i[new create], controller: "gemini"
+  resources :histories, only: [:index, :show]
 
   # （任意）/gemini に直接アクセスしても new を出すエイリアス
   get "/gemini", to: "gemini#new"
 
   resources :blogs
   get "up" => "rails/health#show", as: :rails_health_check
+
+
 end

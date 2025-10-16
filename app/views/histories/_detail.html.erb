@@ -1,0 +1,11 @@
+<h4 class="fw-bold mb-3">
+  <%= history.race_name.presence || "レース名なし" %>
+  <small class="text-muted">
+    （<%= history.race_date&.strftime("%Y/%m/%d") || "レース日付なし" %>）
+  </small>
+</h4>
+
+<div class="bg-light border rounded p-3"
+     style="height: 70vh; overflow-y: auto; white-space: pre-wrap; font-family: monospace; line-height: 1.6;">
+  <%= simple_format(h(history.result)) %>
+</div>

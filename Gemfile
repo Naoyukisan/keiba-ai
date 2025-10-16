@@ -49,6 +49,8 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  gem "dotenv-rails"
 end
 
 group :development do
@@ -63,3 +65,5 @@ group :test do
 end
 
 gem "htmlbeautifier", "~> 1.4", group: :development
+gem 'devise'
+gem "rails-erd", "~> 1.7"
