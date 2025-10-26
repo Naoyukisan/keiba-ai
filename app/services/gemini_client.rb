@@ -15,7 +15,12 @@ class GeminiClient
     req = Net::HTTP::Post.new(uri, { "Content-Type" => "application/json" })
     req.body = {
       contents: [
-        { role: "user", parts: [ { text: prompt.to_s } ] }
+            { role: "user", parts: [ { text: prompt.to_s } ] }],
+      generationConfig: {
+        temperature: 0.1, topP: 0.9, topK: 32, maxOutputTokens: 2048
+      },
+      tools: [
+        { google_search: {} } 
       ]
     }.to_json
 

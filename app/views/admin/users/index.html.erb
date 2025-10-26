@@ -1,0 +1,59 @@
+<% content_for :title, "ユーザー管理" %>
+
+<h1 class="h3 mb-3">ユーザー一覧</h1>
+
+<div class="mb-3 text-end">
+  <%= link_to "＋ ユーザーを追加", new_admin_user_path, class: "btn btn-primary" %>
+</div>
+
+<table class="table table-hover align-middle">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Email</th>
+      <th>管理者</th>
+      <th>作成日</th>
+      <th class="text-end">操作</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% (@users || []).each do |u| %>
+      <% is_current = (current_user&.id == u.id) %>
+
+      <tr>
+        <td><%= u.id %></td>
+        <td><%= u.email %></td>
+        <td>
+          <span class="badge <%= u.admin? ? 'bg-primary' : 'bg-secondary' %>">
+            <%= u.admin? ? 'Admin' : 'User' %>
+          </span>
+        </td>
+        <td><%= u.created_at&.strftime("%Y-%m-%d %H:%M") %></td>
+        <td class="text-end">
+          <div class="btn-group">
+            <%= link_to "編集", edit_admin_user_path(u), class: "btn btn-sm btn-outline-primary" %>
+
+            <% if is_current %>
+              <button class="btn btn-sm btn-outline-danger" disabled>削除</button>
+            <% else %>
+              <%= button_to "削除",
+                    admin_user_path(u),
+                    method: :delete,
+                    form:  { data: { turbo_confirm: "本当に削除しますか？" }, class: "d-inline" },
+                    class: "btn btn-sm btn-outline-danger" %>
+            <% end %>
+          </div>
+
+          <% if is_current %>
+            <div class="small text-muted">※自分自身は削除できません</div>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<% if (@users || []).empty? %>
+  <div class="alert alert-info">ユーザーがまだいません。</div>
+<% end %>

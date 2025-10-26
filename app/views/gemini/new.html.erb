@@ -4,50 +4,72 @@
   <pre class="p-3 bg-light border border-danger rounded text-danger"><%= h(@error) %></pre>
 <% end %>
 
+<!-- === ページヘッダー（リード文） === -->
+<div class="mb-4">
+  <h1 class="h3 mb-2">予想</h1>
+  <div class="bg-body-tertiary border rounded p-3">
+    <p class="mb-0">
+      レース情報を入力したら「予想を始める」を押してください。<br>
+      生成AIが予想結果を提示します。
+    </p>
+  </div>
+</div>
+
 <div class="row g-4 align-items-start">
-  <!-- 左：予想フォーム（1） -->
-  <div class="col-12 col-lg-2">
-    <h2 class="mb-3">予想</h2>
+  <!-- 左＋中央（フォーム側） -->
+  <div class="col-12 col-lg-7">
     <%= form_with url: gemini_path, method: :post, data: { turbo: false } do |f| %>
-      <table class="table table-borderless table-sm align-middle mb-2" style="width:100%;">
-        <tr>
-          <th class="text-nowrap pe-2">レース名</th>
-          <td><%= f.text_field :race_name, class: "form-control form-control-sm" %></td>
-        </tr>
-        <tr>
-          <th class="text-nowrap pe-2">日付</th>
-          <td><%= f.date_field :date, class: "form-control form-control-sm" %></td>
-        </tr>
-        <tr>
-          <th class="text-nowrap pe-2">時間</th>
-          <td><%= f.time_field :time, class: "form-control form-control-sm" %></td>
-        </tr>
-        <tr>
-          <th class="text-nowrap pe-2">競馬場</th>
-          <td><%= f.text_field :place, class: "form-control form-control-sm" %></td>
-        </tr>
-        <tr>
-          <th class="text-nowrap pe-2">ラウンド</th>
-          <td><%= f.number_field :round, class: "form-control form-control-sm" %></td>
-        </tr>
-        <tr>
-          <th class="text-nowrap pe-2">クラス</th>
-          <td><%= f.text_field :class_name, class: "form-control form-control-sm" %></td>
-        </tr>
-        <tr>
-          <th class="text-nowrap pe-2">距離</th>
-          <td><%= f.text_field :distance, class: "form-control form-control-sm" %></td>
-        </tr>
-      </table>
-      <%= f.submit "予想を始める", class: "btn btn-primary btn-sm w-100" %>
+      <div class="row g-4">
+        <!-- 左：レース情報 -->
+        <div class="col-12 col-lg-5">
+          <h2 class="fs-5 mb-2">レース情報</h2>
+
+          <%# --- 各入力フィールド --- %>
+          <% [
+            [:race_name, "レース名"],
+            [:date, "日付"],
+            [:time, "時間"],
+            [:place, "競馬場"],
+            [:round, "ラウンド"],
+            [:class_name, "クラス"],
+            [:distance, "距離"]
+          ].each do |field, label| %>
+            <div class="mb-2">
+              <label class="form-label small"><%= label %></label>
+              <% if field == :date %>
+                <%= f.date_field field, class: "form-control form-control-sm" %>
+              <% elsif field == :time %>
+                <%= f.time_field field, class: "form-control form-control-sm" %>
+              <% elsif field == :round %>
+                <%= f.number_field field, class: "form-control form-control-sm" %>
+              <% else %>
+                <%= f.text_field field, class: "form-control form-control-sm" %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- 中央：レース情報詳細 -->
+        <div class="col-12 col-lg-7">
+          <h2 class="fs-5 mb-2">　</h2>
+          <p class="fs-6 mb-2">レース情報詳細</p>
+          <%= f.text_area :race_details,
+                class: "form-control mb-3",
+                rows: 19,
+                style: "white-space: pre-wrap;",
+                placeholder: "出走馬などの情報を記入してください。" %>
+
+          <%= f.submit "予想を始める", class: "btn btn-primary btn-sm w-100" %>
+          <p class="mt-2 small text-muted">※正確な情報を入力するほど精度が上がります。</p>
+        </div>
+      </div>
     <% end %>
   </div>
 
-  <!-- 右：予想結果（5） -->
-  <div class="col-12 col-lg-10">
-    <h3 class="mb-3">予想結果</h3>
-    <div class="bg-light border rounded p-3"
-         style="height: 70vh; overflow-y: auto; white-space: pre-wrap; font-family: monospace; line-height: 1.5; font-size: 0.95rem;">
+  <!-- 右：予想結果 -->
+  <div class="col-12 col-lg-5">
+    <h2 class="fs-5 mb-3">予想結果</h2>
+    <div class="bg-light border rounded p-3 sticky-top" style="top: 1rem; height: 75vh; overflow-y: auto; white-space: pre-wrap; font-family: monospace; line-height: 1.5; font-size: 0.95rem;">
       <% if @answer.present? %>
         <%= simple_format(h(@answer)) %>
       <% else %>
@@ -55,4 +77,12 @@
       <% end %>
     </div>
   </div>
+</div>
+
+<hr class="my-5">
+
+<!-- 現在の予想方法 -->
+<div class="mt-4">
+  <h3 class="fw-semibold mb-2">現在の予想方法</h3>
+  <%= text_area_tag :current_method, @current_method, class: "form-control mb-3", rows: 8, readonly: true %>
 </div>

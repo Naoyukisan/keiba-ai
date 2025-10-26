@@ -1,0 +1,37 @@
+<% if user.errors.any? %>
+  <div class="alert alert-danger">
+    <div class="fw-bold mb-1">エラー（<%= user.errors.count %>件）</div>
+    <ul class="mb-0">
+      <% user.errors.full_messages.each do |m| %>
+        <li><%= m %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<div class="row g-3">
+  <div class="col-12">
+    <%= form.label :email, class: "form-label" %>
+    <%= form.email_field :email, class: "form-control", required: true, autofocus: true %>
+  </div>
+
+  <div class="col-md-6">
+    <%= form.label :password, class: "form-label" %>
+    <%= form.password_field :password, class: "form-control", <%= user.new_record? ? "required: true" : "" %> %>
+    <% unless user.new_record? %>
+      <div class="form-text">※空欄のまま保存するとパスワードは変更されません。</div>
+    <% end %>
+  </div>
+
+  <div class="col-md-6">
+    <%= form.label :password_confirmation, class: "form-label" %>
+    <%= form.password_field :password_confirmation, class: "form-control", <%= user.new_record? ? "required: true" : "" %> %>
+  </div>
+
+  <div class="col-12">
+    <div class="form-check">
+      <%= form.check_box :admin, class: "form-check-input", id: "user_admin" %>
+      <%= form.label :admin, "管理者権限", class: "form-check-label" %>
+    </div>
+  </div>
+</div>

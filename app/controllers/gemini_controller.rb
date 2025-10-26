@@ -1,102 +1,101 @@
+# app/controllers/gemini_controller.rb
 class GeminiController < ApplicationController
-  def new
-  end
+  before_action :set_current_method, only: [:new, :create]
+
+  def new; end
 
   def create
     @answer = nil
-    begin
-      prompt = build_prompt(gemini_params)
+    attrs   = gemini_params
+    prompt  = build_prompt(attrs)
 
-      if prompt.blank?
-        @error = "入力が不足しています。フォームに値を入れてください。"
-        return render :new, status: :unprocessable_entity
-      end
-
-      client  = GeminiClient.new
-      @answer = client.generate_text(prompt)
-    PredictionHistory.create!(
-      race_name: params[:race_name],
-      race_date: params[:date], 
-      predicted_at: Time.current,
-      result: @answer
-    )
-    rescue => e
-      Rails.logger.error(e.full_message)
-      @error = e.message
-    ensure
-      render :new
+    if prompt.blank?
+      @error = "入力が不足しています。フォームに値を入れてください。"
+      return render :new, status: :unprocessable_entity
     end
+
+    client  = GeminiClient.new
+    @answer = client.generate_text(prompt)
+
+    PredictionHistory.create!(
+      race_name:    attrs[:race_name],
+      race_date:    attrs[:date],
+      predicted_at: Time.current,
+      result:       @answer
+    )
+  rescue => e
+    Rails.logger.error(e.full_message)
+    @error = e.message
+  ensure
+    render :new
   end
 
   private
-
-  def gemini_params
-    params.permit(:race_name, :date, :time, :place, :round, :class_name, :distance)
+  def set_current_method
+    @current_method = CurrentPredictionMethodFetcher.call
   end
 
-def build_prompt(h)
-  # 欲しい重み（例の 40/20/40）を固定
-  weights = { perf: 40, pedigree: 20, cond: 40 }
+  # Strong Parameters
+  def gemini_params
+    params
+      .permit(:race_name, :date, :time, :place, :round, :class_name, :distance, :race_details)
+      .to_h
+      .symbolize_keys
+  end
 
-  <<~PROMPT.strip
-  あなたは競馬の予想ライターです。以下の入力を使い、**指定した構成とフォーマットだけ**で出力してください。
-  余計な前置き・注意書き・自己言及は一切禁止です。日本語で書いてください。
+   def build_prompt(h)
+  weights = {
+    perf: 40,
+    pedigree: 20,
+    cond: 40
+  }
+    method_text = PredictionMethod.where(active: true).first&.body.to_s
+    f = ->(v, fallback = "-") { v.to_s.presence || fallback }
 
-  # 入力（レース情報）
-  - レース名: #{h[:race_name]}
-  - 日付: #{h[:date]} #{h[:time]}
-  - 競馬場: #{h[:place]}
-  - ラウンド: #{h[:round]}
-  - クラス: #{h[:class_name]}
-  - 距離: #{h[:distance]}
+    # race_details が空ならエラー（任意：必須入力にしたい場合）
+    return nil if h[:race_details].to_s.strip.blank?
 
-  # 出力要件（この順序・この見出し・このレイアウトを厳守）
-  1) 「◇順位予想」セクション：
-     - 見出し: `◇順位予想`
-     - 直下に **Markdown表** を 1 つだけ出力。ヘッダは **「着順 | 馬番 | 馬名 | スコア」** の4列、行は 1〜11着 まで。
-       - スコアは **整数 + “点”**（例: 89点）。
-       - 例と同じ並び（着順→馬番→馬名→スコア）。
-       **TSV（タブ区切り）** を以下のコードフェンスで出力：
-       ```
-       着順\t馬番\t馬名\tスコア
-       1着\t<馬番>\t<馬名>\t<xx点>
-       2着\t...\t...\t...
-       ...
-       ```
-       ※ バッククォート3つの code block にすること。列は表と同じ並び・同じ件数。余計な解説禁止。
+    output_spec = <<~SPEC
+      # 出力要件（この順序・この見出し・このレイアウトを厳守）
+      1) 「◇順位予想」セクション：
+        ...(省略・現状のまま)...
+    SPEC
 
-  2) 「◇スコア」セクション：
-     - 見出し: `◇スコア`
-     - 1 行目に **（重み付け：実績#{weights[:perf]}点、血統#{weights[:pedigree]}点、調子#{weights[:cond]}点）** と書く。
-     - 以降は **着順の昇順** で、各馬について下記テンプレで出力（全馬分）。かならず改行・記号・半角数字を合わせること：
-       ```
-       <着順>着（<馬番>番）：<馬名> (<合計点>点)
-        ・実績 (<x/#{weights[:perf]}>): 近走レベル(<n>), レース質(<n>), 適性(<n>)
-        ・血統 (<y/#{weights[:pedigree]}>): コース(<n>), 馬場(<n>)
-        ・調子 (<z/#{weights[:cond]}>): パフォ(<n>), 仕上(<n>), ローテ(<n>)
+    method_fallback = <<~FALLBACK
+      （参考：方法が未登録のため簡易ルールを適用）
+      - 評価軸：実績・血統・調子。配点は方法に応じて適切に設定し、合計点と順位表の整合を保つこと。
+    FALLBACK
 
-       ```
-       - x,y,z は各配点の**合計**、n は**素点**（整数）。合計点 = x+y+z とし、「順位予想」のスコアと整合させる。
-       - 使う用語・並び・括弧はテンプレのまま。
+    # ★ race_details を唯一のデータ源として使うよう強制する注意書きを追加
+    <<~PROMPT.strip
+      あなたは競馬の予想ライターです。以下の入力を使い、**指定した構成とフォーマットだけ**で出力してください。
+      余計な前置き・注意書き・自己言及は一切禁止です。日本語で書いてください。
 
-  3) 「◇馬毎のスコア解説」セクション：
-     - 見出し: `◇馬毎のスコア解説`
-     - 1 行につき 1 頭、**「<着順>着 <馬名>: ...」** の形式で簡潔に根拠を書く（全頭分）。誇張や断定は避け、端的に。
+      # 予想方法（この節の規則は最優先で厳守）
+      #{method_text.presence || method_fallback}
 
-  4) 「◇展開予想」セクション：
-     - 見出し: `◇展開予想`
-     - 「スタート〜中盤」「中盤〜終盤」「ラスト」の3段落で、主導権・仕掛けのタイミング・決め手の流れを要約。
+      # 厳格ルール（データの使い方）
+      - 以降に与える「レース情報詳細（race_details）」を**唯一の出走馬・オッズ等の情報源**として使用してください。
+      - 入力に存在しない馬名・馬番・数値は**絶対に作らない**でください。情報が無い項目は「不明」と表記してください。
+      - 外部検索や一般知識による補完は禁止です。
 
-  5) 「◇予想とオッズの比較と分析」セクション：
-     - 見出し: `◇予想とオッズの比較と分析`
-     - 小見出し「人気と評価の一致」「妙味のある馬」「評価を下げた人気馬」「結論」をこの順に出す。
-     - 具体的な人気が不明な場合は「想定人気」を用い、記述は簡潔に。
+      # 入力（レース情報）
+      - レース名: #{f.(h[:race_name])}
+      - 日付: #{f.(h[:date])} #{f.(h[:time])}
+      - 競馬場: #{f.(h[:place])}
+      - ラウンド: #{f.(h[:round])}
+      - クラス: #{f.(h[:class_name])}
+      - 距離: #{f.(h[:distance])}
+      （重み付け：実績#{weights[:perf]}点、血統#{weights[:pedigree]}点、調子#{weights[:cond]}点）
+    
 
-  # 厳格ルール
-  - 出力は **上記5セクションのみ**。順番・見出し・記号・表形式・コードブロックを厳守。
-  - 候補馬の実名・馬番が不明でも、整合の取れた仮名で構いません（後で置換可能）。ただし**行数は必ず 11 行**で固定。
-  - 「です/ます」体で簡潔に。句読点は全角「、。」を使う。
-  PROMPT
-end
+      # 入力（レース情報詳細 / race_details）
+      以下のテキストブロックだけを根拠にしてください。改行・タブなどのレイアウトを保持して読み取ってください。
+      ```
+      #{h[:race_details].to_s}
+      ```
 
+      #{output_spec}
+    PROMPT
+  end
 end

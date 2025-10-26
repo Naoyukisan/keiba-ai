@@ -1,30 +1,42 @@
+# config/routes.rb
 Rails.application.routes.draw do
-  get "histories/index"
-  get "histories/show"
+  # Devise
   devise_for :users
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  # ルート：未ログイン→ログイン画面 / ログイン済→予想トップ
+  unauthenticated :user do
+    root to: "devise/sessions#new"
+  end
+  authenticated :user do
+    root to: "gemini#new", as: :authenticated_root
+  end
 
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+  # RailsAdmin は /ra に退避（/admin との衝突回避）
+  mount RailsAdmin::Engine => "/ra", as: "rails_admin"
 
-  # Defines the root path route ("/")
-  # root "posts#index"
-  
-  # フォームをトップに
-  root "gemini#new"
-
+  # Gemini
   resource :gemini, only: %i[new create], controller: "gemini"
-  resources :histories, only: [:index, :show]
+  get "/gemini", to: "gemini#new" # 任意
 
-  # （任意）/gemini に直接アクセスしても new を出すエイリアス
-  get "/gemini", to: "gemini#new"
+  # Histories
+  resources :histories, only: %i[index show]
 
-  resources :blogs
-  get "up" => "rails/health#show", as: :rails_health_check
+  # Prediction Methods
+  resources :prediction_methods, only: [] do
+    post :activate, on: :member
+    collection do
+      post :activate_previous
+      post :revert
+    end
+  end
 
+  # Improvements（← applyC を apply に修正）
+  resources :improvements, only: %i[new create] do
+    collection { post :apply }
+  end
 
+  # Admin名前空間（/admin/users 等）
+  namespace :admin do
+    resources :users, only: %i[index new create edit update destroy]
+  end
 end

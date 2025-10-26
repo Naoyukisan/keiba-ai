@@ -1,0 +1,59 @@
+<!-- app/views/improvements/new.html.erb -->
+<h2 class="mb-3">予想改善</h2>
+<div class="bg-body-tertiary border rounded p-3">
+  <p class="mb-0">
+    ・レースの予想結果と実際の結果を入力し、「予想改善を始める」を押すことで生成AIから改善後の予想プロンプトを得られます。予想プロンプトの変更ができます。<br>
+    ・表示されあた「この予想方法に変更」を押すことで次回の予想からのプロンプトを変更できます。
+  </p>
+</div>
+<p>　</p>
+
+<% if flash[:notice].present? %>
+  <div class="alert alert-success"><%= flash[:notice] %></div>
+<% end %>
+<% if flash[:alert].present? %>
+  <div class="alert alert-danger"><%= flash[:alert] %></div>
+<% end %>
+
+<div class="d-flex gap-2 mb-3">
+  <%= button_to "ひとつ前の予想方法に戻す",
+       activate_previous_prediction_methods_path,
+       method: :post,
+       class: "btn btn-outline-secondary",
+       data: { turbo: false, confirm: "直前の予想方法に戻します。よろしいですか？" } %>
+</div>
+
+<%= form_with url: improvements_path, method: :post, data: { turbo: false } do %>
+  <label class="form-label fw-semibold">現在の予想方法</label>
+  <%= text_area_tag :current_method, @current_method, class: "form-control mb-4", rows: 10 %>
+
+  <div class="row g-3">
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">予想結果</label>
+      <%= text_area_tag :predicted_result, @predicted_result, class: "form-control", rows: 12 %>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">実際の結果</label>
+      <%= text_area_tag :actual_result, @actual_result, class: "form-control", rows: 12 %>
+    </div>
+  </div>
+
+  <div class="text-end my-3">
+    <%= submit_tag "予想改善を始める", class: "btn btn-primary" %>
+  </div>
+<% end %>
+
+<hr class="my-4">
+
+<label class="form-label fw-semibold">改善後の予想方法（編集可）</label>
+<%= form_with url: apply_improvements_path, method: :post, data: { turbo: false } do %>
+  <%= text_area_tag :improved_method,
+        (@improved_method.to_s),
+        class: "form-control",
+        rows: 16,
+        placeholder: "ここに改善案が表示され、編集できます。まずは上の「予想改善を始める」で生成してください。" %>
+
+  <div class="text-end mt-3">
+    <%= submit_tag "この予想方法に変更", class: "btn btn-success" %>
+  </div>
+<% end %>

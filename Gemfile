@@ -67,3 +67,5 @@ end
 gem "htmlbeautifier", "~> 1.4", group: :development
 gem 'devise'
 gem "rails-erd", "~> 1.7"
+
+gem "rails_admin", "~> 3.2"

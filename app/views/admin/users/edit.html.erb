@@ -1,0 +1,37 @@
+<% content_for :title, "ユーザー編集" %>
+
+<h1 class="h3 mb-3">ユーザー編集</h1>
+
+<%= form_with model: [:admin, @user], local: true do |f| %>
+  <div class="mb-3">
+    <%= f.label :email, class: "form-label" %>
+    <%= f.email_field :email, class: "form-control", autocomplete: "email" %>
+  </div>
+
+  <div class="form-check form-switch mb-4">
+    <%= f.check_box :admin, class: "form-check-input", id: "adminSwitch" %>
+    <%= f.label :admin, "管理者", class: "form-check-label", for: "adminSwitch" %>
+  </div>
+
+  <!-- ここから追加：パスワード変更（空欄なら変更なし） -->
+  <div class="mb-3">
+    <%= f.label :password, "新しいパスワード", class: "form-label" %>
+    <%= f.password_field :password, class: "form-control",
+          autocomplete: "new-password",
+          placeholder: "（空欄なら変更しません）" %>
+    <div class="form-text">6文字以上。空欄のままなら変更されません。</div>
+  </div>
+
+  <div class="mb-4">
+    <%= f.label :password_confirmation, "新しいパスワード（確認）", class: "form-label" %>
+    <%= f.password_field :password_confirmation, class: "form-control",
+          autocomplete: "new-password",
+          placeholder: "（空欄なら変更しません）" %>
+  </div>
+  <!-- 追加ここまで -->
+
+  <div class="d-flex gap-2">
+    <%= f.submit "更新する", class: "btn btn-primary" %>
+    <%= link_to "戻る", admin_users_path, class: "btn btn-outline-secondary" %>
+  </div>
+<% end %>
