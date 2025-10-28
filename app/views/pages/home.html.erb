@@ -1,0 +1,16 @@
+<% content_for :title, "けいばAI｜トップ" %>
+
+<div class="container py-5">
+  <h1 class="display-5 fw-bold mb-3">けいばAI</h1>
+  <p class="lead text-muted mb-4">
+    レース情報を入力して「予想を始める」を押すだけ。生成AIが根拠付きで予想します。
+  </p>
+
+  <% if user_signed_in? %>
+    <%= link_to "予想ページへ", gemini_path, class: "btn btn-primary btn-lg" %>
+    <%= link_to "履歴を見る", histories_path, class: "btn btn-outline-secondary btn-lg ms-2" %>
+  <% else %>
+    <%= link_to "ログイン", new_user_session_path, class: "btn btn-primary btn-lg" %>
+    <%= link_to "新規登録", new_user_registration_path, class: "btn btn-outline-secondary btn-lg ms-2" %>
+  <% end %>
+</div>
