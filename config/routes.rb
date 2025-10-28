@@ -1,6 +1,6 @@
 # config/routes.rb
 Rails.application.routes.draw do
-  # Devise（ログイン機能）
+  # Devise
   devise_for :users
 
   # ログイン済み → 予想トップ
@@ -8,11 +8,11 @@ Rails.application.routes.draw do
     root to: "gemini#new", as: :authenticated_root
   end
 
-  # 未ログイン → トップ（概要ページ）
+  # 未ログイン → トップ（概要）
   unauthenticated :user do
     root to: "pages#home", as: :unauthenticated_root
   end
-  get "/home", to: "pages#home"  # 直リンク用（任意）
+  get "/home", to: "pages#home" # 直リンク用（任意）
 
   # RailsAdmin は /ra
   mount RailsAdmin::Engine => "/ra", as: "rails_admin"
