@@ -7,6 +7,7 @@ class Admin::BaseController < ApplicationController
   def require_admin!
     return if current_user&.admin?
 
-    redirect_to root_path, alert: "管理者のみアクセス可能です。"
+   redirect_to (user_signed_in? ? authenticated_root_path : unauthenticated_root_path),
+            alert: "管理者のみアクセス可能です。"
   end
 end

@@ -45,7 +45,8 @@ class Admin::UsersController < ApplicationController
   private
 
   def require_admin
-    redirect_to root_path, alert: "権限がありません。" unless current_user&.admin?
+    redirect_to (user_signed_in? ? authenticated_root_path : unauthenticated_root_path),
+            alert: "権限がありません。" unless current_user&.admin?
   end
 
   def user_params
