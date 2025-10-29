@@ -1,8 +1,8 @@
 require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
-+  # 例外をルーティングへ流す（/404, /500 へ）
-+  config.exceptions_app = routes
+  # 例外をルーティングへ流す（/404, /500 へ）
+  config.exceptions_app = routes
 
   # デバッグ画面を出さず、例外を通常どおり処理
   config.action_dispatch.show_exceptions = :all
