@@ -37,4 +37,15 @@ class ApplicationController < ActionController::Base
   def after_sign_out_path_for(_resource_or_scope)
     new_user_session_path
   end
+
+  # よくある「存在しない/見つからない」系は 404 に寄せる
+  rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
+  rescue_from ActionController::RoutingError, with: :render_not_found
+
+  private
+
+  def render_not_found
+    redirect_to "/404"
+  end
+  
 end
