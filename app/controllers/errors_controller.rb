@@ -8,4 +8,7 @@ class ErrorsController < ActionController::Base
   def internal_server_error
     render status: :internal_server_error
   end
+  def boom
+    raise "Forced boom to test 500 page"
+  end
 end
