@@ -23,7 +23,7 @@
 </head>
 
 <body>
-  <!-- ナビ（ここは body の中に置く） -->
+  <% unless content_for?(:hide_navbar) %>
  <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm px-3">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold text-primary" href="<%= user_signed_in? ? authenticated_root_path : unauthenticated_root_path %>">けいばAI</a>
@@ -55,6 +55,7 @@
     </div>
   </div>
 </nav>
+<% end %>
 
   <!-- ここが各ページの“絵”を差し込む額縁 -->
   <main class="container py-4">
