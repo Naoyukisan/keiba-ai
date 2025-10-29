@@ -40,17 +40,17 @@ RailsAdmin.config do |config|
     # history_show
   end
   
-  ### Devise 認証
+  # Devise を使う場合の推奨（ログイン必須）
   config.authenticate_with do
     warden.authenticate! scope: :user
   end
   config.current_user_method(&:current_user)
 
-  ### admin だけ許可
+  # 管理者のみ許可
   config.authorize_with do
-    redirect_to main_app.root_path, alert: "権限がありません" unless current_user&.admin?
+    redirect_to main_app.new_admin_session_path, alert: "管理者権限が必要です。" unless current_user&.admin?
   end
-
+  
   ### 管理対象モデル
   config.included_models = %w[
     PredictionMethod

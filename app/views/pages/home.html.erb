@@ -8,15 +8,17 @@
   </p>
 
   <% if user_signed_in? %>
-    <div class="d-flex gap-2">
+    <div class="d-flex flex-column flex-sm-row gap-2">
       <%= link_to "予想ページへ", gemini_path, class: "btn btn-primary btn-lg" %>
       <%= link_to "履歴を見る", histories_path, class: "btn btn-outline-secondary btn-lg" %>
     </div>
   <% else %>
-    <div class="d-flex gap-2">
+    <div class="d-flex flex-column flex-sm-row gap-2">
       <%= link_to "ログイン", new_user_session_path, class: "btn btn-primary btn-lg" %>
       <%= link_to "新規登録", new_user_registration_path, class: "btn btn-outline-secondary btn-lg" %>
+      <%= link_to "管理者はこちら", new_admin_session_path, class: "btn btn-outline-secondary btn-lg" %>
     </div>
+
     <small class="text-muted d-block mt-2">アカウントが無い方は「新規登録」から。</small>
   <% end %>
 </div>

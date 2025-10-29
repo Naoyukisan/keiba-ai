@@ -45,4 +45,14 @@ Rails.application.routes.draw do
   
   match "/404", to: "errors#not_found", via: :all
   match "/500", to: "errors#internal_server_error", via: :all
+
+  devise_scope :user do
+    get    "admin/sign_in",  to: "admin/sessions#new",     as: :new_admin_session
+    post   "admin/sign_in",  to: "admin/sessions#create",  as: :admin_session
+    delete "admin/sign_out", to: "admin/sessions#destroy", as: :destroy_admin_session
+  end
+  
+  # 管理者ログイン後の行き先（RailsAdmin を使っているなら /ra に寄せてもOK）
+  # 例: RailsAdmin トップへ飛ばす
+  get "admin", to: redirect("/ra"), as: :admin_root
 end
