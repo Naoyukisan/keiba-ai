@@ -17,14 +17,15 @@ Rails.application.routes.draw do
   # Histories
   resources :histories, only: %i[index show]
 
-  # Prediction Methods
-  resources :prediction_methods, only: [] do
+  # === ▼ ここを差し替え（CRUDを有効化） ===
+  resources :prediction_methods do
     post :activate, on: :member
     collection do
       post :activate_previous
       post :revert
     end
   end
+  # === ▲ 差し替えここまで ===
 
   # Improvements
   resources :improvements, only: %i[new create] do
@@ -50,8 +51,7 @@ Rails.application.routes.draw do
   # 管理者トップ（RailsAdmin を使う想定）
   get "admin", to: redirect("/ra"), as: :admin_root
 
-  # === ▼ ここから追記（ゲストログイン） ===
+  # ゲストログイン
   post "/guest_login/admin", to: "guest_sessions#admin", as: :guest_admin_login
   post "/guest_login/user",  to: "guest_sessions#user",  as: :guest_user_login
-  # === ▲ 追記ここまで ===
 end

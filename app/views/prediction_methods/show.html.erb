@@ -1,0 +1,41 @@
+<!-- app/views/prediction_methods/show.html.erb -->
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h2 class="mb-0">予想方法 詳細</h2>
+  <div>
+    <%= link_to "一覧へ", prediction_methods_path, class: "btn btn-sm btn-outline-secondary" %>
+
+    <!-- ★ 編集・削除はログイン済みなら誰でも表示 -->
+    <%= link_to "編集", edit_prediction_method_path(@prediction_method), class: "btn btn-sm btn-primary ms-1" %>
+
+    <%= button_to "削除", prediction_method_path(@prediction_method),
+      method: :delete,
+      form: { data: { turbo_confirm: "削除します。よろしいですか？" } },
+      class: "btn btn-sm btn-outline-danger ms-1" %>
+
+    <!-- 有効化ボタンは管理者のみ -->
+    <% if current_user&.admin? && !@prediction_method.active %>
+      <%= button_to "この方法を有効化", activate_prediction_method_path(@prediction_method),
+        method: :post, class: "btn btn-sm btn-success ms-1" %>
+    <% end %>
+  </div>
+</div>
+
+<div class="mb-2">
+  <span class="badge <%= @prediction_method.active ? 'bg-success' : 'bg-secondary' %>">
+    <%= @prediction_method.active ? "有効" : "無効" %>
+  </span>
+</div>
+
+<dl class="row">
+  <dt class="col-sm-2">ID</dt>
+  <dd class="col-sm-10"><%= @prediction_method.id %></dd>
+
+  <dt class="col-sm-2">名称</dt>
+  <dd class="col-sm-10"><%= @prediction_method.name %></dd>
+
+  <dt class="col-sm-2">本文（プロンプト）</dt>
+  <dd class="col-sm-10"><pre class="p-3 bg-light border rounded"><%= h @prediction_method.body %></pre></dd>
+
+  <dt class="col-sm-2">更新日</dt>
+  <dd class="col-sm-10"><%= l @prediction_method.updated_at, format: :long %></dd>
+</dl>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_30_215750) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_31_020000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,6 +40,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_30_215750) do
     t.datetime "predicted_at"
     t.bigint "user_id"
     t.index ["user_id"], name: "index_prediction_histories_on_user_id"
+  end
+
+  create_table "prediction_method_switches", force: :cascade do |t|
+    t.bigint "prediction_method_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_prediction_method_switches_on_created_at"
+    t.index ["prediction_method_id"], name: "index_prediction_method_switches_on_prediction_method_id"
   end
 
   create_table "prediction_methods", force: :cascade do |t|
@@ -73,5 +81,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_30_215750) do
 
   add_foreign_key "messages", "rooms"
   add_foreign_key "messages", "users"
-  add_foreign_key "prediction_histories", "users"
+  add_foreign_key "prediction_histories", "users", on_delete: :nullify
+  add_foreign_key "prediction_method_switches", "prediction_methods"
 end

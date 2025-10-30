@@ -69,3 +69,15 @@ gem 'devise'
 gem "rails-erd", "~> 1.7"
 
 gem "rails_admin", "~> 3.2"
+
+group :development, :test do
+  gem "rspec-rails", "~> 7.0"
+  gem "factory_bot_rails"
+  gem "faker"
+end
+
+group :test do
+  gem "capybara"
+  gem "selenium-webdriver"   # 将来 E2E を増やす想定（今は rack_test でOK）
+  gem "webdrivers"           # Chrome 系を使うときだけ自動DL
+end

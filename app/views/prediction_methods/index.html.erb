@@ -1,0 +1,44 @@
+<!-- app/views/prediction_methods/index.html.erb -->
+<h2 class="mb-3">予想方法 一覧</h2>
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+  <div></div>
+  <% if current_user&.admin? %>
+    <%= link_to "新規作成", new_prediction_method_path, class: "btn btn-primary btn-sm" %>
+  <% end %>
+</div>
+
+<table class="table table-hover align-middle">
+  <thead>
+    <tr>
+      <th style="width:80px;">ID</th>
+      <th>名称</th>
+      <th style="width:120px;">状態</th>
+      <th style="width:220px;"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @prediction_methods.each do |m| %>
+      <tr>
+        <td><%= m.id %></td>
+        <td><%= link_to m.name, prediction_method_path(m) %></td>
+        <td>
+          <span class="badge <%= m.active ? 'bg-success' : 'bg-secondary' %>">
+            <%= m.active ? "有効" : "無効" %>
+          </span>
+        </td>
+        <td class="text-end">
+          <% if current_user&.admin? %>
+            <div class="btn-group">
+              <%= link_to "編集", edit_prediction_method_path(m), class: "btn btn-sm btn-outline-primary" %>
+              <%= button_to "削除", prediction_method_path(m),
+                    method: :delete,
+                    form: { data: { turbo_confirm: "削除します。よろしいですか？" } },
+                    class: "btn btn-sm btn-outline-danger" %>
+            </div>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
