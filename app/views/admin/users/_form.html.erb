@@ -1,37 +1,50 @@
-<% if user.errors.any? %>
+<%# エラー表示（モデルのエラー） %>
+<% if form.object.errors.any? %>
   <div class="alert alert-danger">
-    <div class="fw-bold mb-1">エラー（<%= user.errors.count %>件）</div>
+    <div class="fw-bold mb-1">エラーが発生しました（<%= form.object.errors.count %>件）</div>
     <ul class="mb-0">
-      <% user.errors.full_messages.each do |m| %>
-        <li><%= m %></li>
+      <% form.object.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
       <% end %>
     </ul>
   </div>
 <% end %>
 
-<div class="row g-3">
-  <div class="col-12">
-    <%= form.label :email, class: "form-label" %>
-    <%= form.email_field :email, class: "form-control", required: true, autofocus: true %>
-  </div>
+<div class="mb-3">
+  <%= form.label :email, "メールアドレス", class: "form-label" %>
+  <%= form.email_field :email,
+        class: "form-control",
+        placeholder: "例）user@example.com（変更する場合のみ入力）",
+        autocomplete: "email" %>
+  <div class="form-text">※ メールを変更しない場合は空欄のままでOKです。</div>
+</div>
 
-  <div class="col-md-6">
-    <%= form.label :password, class: "form-label" %>
-    <%= form.password_field :password, class: "form-control", <%= user.new_record? ? "required: true" : "" %> %>
-    <% unless user.new_record? %>
-      <div class="form-text">※空欄のまま保存するとパスワードは変更されません。</div>
-    <% end %>
-  </div>
+<div class="mb-3">
+  <%= form.label :password, "パスワード", class: "form-label" %>
+  <%= form.password_field :password,
+        class: "form-control",
+        placeholder: "変更する場合のみ入力",
+        autocomplete: "new-password" %>
+</div>
 
-  <div class="col-md-6">
-    <%= form.label :password_confirmation, class: "form-label" %>
-    <%= form.password_field :password_confirmation, class: "form-control", <%= user.new_record? ? "required: true" : "" %> %>
-  </div>
+<div class="mb-3">
+  <%= form.label :password_confirmation, "パスワード（確認）", class: "form-label" %>
+  <%= form.password_field :password_confirmation,
+        class: "form-control",
+        placeholder: "パスワード変更時のみ入力",
+        autocomplete: "new-password" %>
+</div>
 
-  <div class="col-12">
-    <div class="form-check">
-      <%= form.check_box :admin, class: "form-check-input", id: "user_admin" %>
-      <%= form.label :admin, "管理者権限", class: "form-check-label" %>
-    </div>
-  </div>
+<div class="form-check mb-3">
+  <%= form.check_box :admin, class: "form-check-input", id: "user_admin" %>
+  <%= form.label :admin, "管理者", class: "form-check-label", for: "user_admin" %>
+</div>
+
+<div class="d-flex gap-2">
+  <% if form.object.new_record? %>
+    <%= form.submit "ユーザーを追加", class: "btn btn-primary" %>
+  <% else %>
+    <%= form.submit "更新する", class: "btn btn-primary" %>
+  <% end %>
+  <%= link_to "戻る", admin_users_path, class: "btn btn-outline-secondary" %>
 </div>

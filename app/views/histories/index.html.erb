@@ -4,30 +4,27 @@
       予想結果の履歴を一覧形式で参照できます。
     </p>
   </div>
-    <p>　</p>
+<p>　</p>
 
 <div class="row g-4 align-items-start">
   <!-- 左：履歴一覧 -->
   <div class="col-12 col-lg-3">
     <div class="list-group" style="max-height: 70vh; overflow-y: auto;">
-<% @histories.each do |h| %>
-  <%= link_to history_path(h),
-        class: "list-group-item list-group-item-action",
-        data: { turbo_frame: "history_detail" } do %>
+      <% @histories.each do |h| %>
+        <%= link_to history_path(h),
+              class: "list-group-item list-group-item-action",
+              data: { turbo_frame: "history_detail" } do %>
 
-    <!-- 1行目：レース名（太字・省略対応） -->
-    <div class="fw-bold text-truncate">
-      <%= h.race_name.presence || "レース名なし" %>
-    </div>
+          <div class="fw-bold text-truncate">
+            <%= h.race_name.presence || "レース名なし" %>
+          </div>
 
-    <!-- 2行目：レース日付（なくても崩れない） -->
-    <small class="text-muted">
-      レース日：<%= h.race_date&.strftime("%Y/%m/%d") || "不明" %><br>
-      ※予想日：<%= h.created_at&.strftime("%Y/%m/%d %H:%M") || "不明" %>
-    </small>
-  <% end %>
-<% end %>
-
+          <small class="text-muted">
+            レース日：<%= h.race_date&.strftime("%Y/%m/%d") || "不明" %><br>
+            ※予想日：<%= h.created_at&.strftime("%Y/%m/%d %H:%M") || "不明" %>
+          </small>
+        <% end %>
+      <% end %>
     </div>
   </div>
 

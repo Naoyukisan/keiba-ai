@@ -1,9 +1,13 @@
 class HistoriesController < ApplicationController
+  before_action :authenticate_user!
+
   def index
-    @histories = PredictionHistory.order(created_at: :desc)
+    @histories = current_user
+      .prediction_histories
+      .order(created_at: :desc)
   end
 
   def show
-    @history = PredictionHistory.find(params[:id])
+    @history = current_user.prediction_histories.find(params[:id])
   end
 end

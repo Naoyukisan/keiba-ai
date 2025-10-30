@@ -1,25 +1,77 @@
 <% content_for :hide_navbar, true %>
 <% content_for :title, "けいばAI｜トップ" %>
 
-<div class="container py-5">
-  <h1 class="display-5 fw-bold mb-3">けいばAI</h1>
-  <p class="lead text-muted mb-4">
-    レース条件を入れて「予想を始める」を押せば生成AIが予想します。<br>
-    履歴閲覧や予想方法の改善もできます。
+<!-- ヒーローセクション -->
+<section class="text-center bg-dark text-white position-relative" style="overflow: hidden; height: 400px;">
+  <%= image_tag "A_digital_illustration_for_けいばAI_(Keiba_AI)_an_.png",
+                class: "w-100 h-100",
+                alt: "けいばAI ヒーロー画像",
+                style: "object-fit: contain; object-position: center; background-color: #0b1e3a;" %>
+
+  <div class="position-absolute top-50 start-50 translate-middle text-center text-white">
+  </div>
+</section>
+
+<div class="container my-4 text-center">
+  <div class="d-inline-flex gap-2">
+    <%= button_to "ゲスト管理者でログイン",
+          guest_admin_login_path,
+          method: :post,
+          class: "btn btn-outline-danger px-4" %>
+
+    <%= button_to "ゲストユーザーでログイン",
+          guest_user_login_path,
+          method: :post,
+          class: "btn btn-primary px-4" %>
+  </div>
+  <p class="text-muted mt-2 mb-0 small">
+    ワンクリックでお試しログインできます（パスワード入力不要）
   </p>
-
-  <% if user_signed_in? %>
-    <div class="d-flex flex-column flex-sm-row gap-2">
-      <%= link_to "予想ページへ", gemini_path, class: "btn btn-primary btn-lg" %>
-      <%= link_to "履歴を見る", histories_path, class: "btn btn-outline-secondary btn-lg" %>
-    </div>
-  <% else %>
-    <div class="d-flex flex-column flex-sm-row gap-2">
-      <%= link_to "ログイン", new_user_session_path, class: "btn btn-primary btn-lg" %>
-      <%= link_to "新規登録", new_user_registration_path, class: "btn btn-outline-secondary btn-lg" %>
-      <%= link_to "管理者はこちら", new_admin_session_path, class: "btn btn-outline-secondary btn-lg" %>
-    </div>
-
-    <small class="text-muted d-block mt-2">アカウントが無い方は「新規登録」から。</small>
-  <% end %>
 </div>
+
+<!-- 機能概要セクション -->
+<div class="container py-5">
+  <h2 class="text-center mb-4 fw-bold">アプリケーション概要</h2>
+  <div class="row g-4 text-center">
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="card-title fw-bold">🎯 予想機能</h5>
+          <p class="card-text text-muted">
+            レース情報を入力して「予想を始める」をクリックするだけ。<br>
+            Gemini APIが展開予想・スコア・順位を自動生成します。
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="card-title fw-bold">📜 予想履歴</h5>
+          <p class="card-text text-muted">
+            過去のAI予想をすべて保存・閲覧可能。<br>
+            履歴ページから再確認や分析もできます。
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="card-title fw-bold">🧠 予想改善</h5>
+          <p class="card-text text-muted">
+            「どんなロジックが良かったか？」を分析し、AIの予想方法を改善。<br>
+            自分専用のAI予想スタイルを作り上げます。
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- フッター -->
+<footer class="text-center text-muted py-4 border-top">
+  <small>© 2025 けいばAI | Powered by Ruby on Rails & Gemini API</small>
+</footer>

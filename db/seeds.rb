@@ -78,4 +78,27 @@ ActiveRecord::Base.transaction do
       puts "[seed] Admin user exists: #{admin_email}"
     end
   end
+  guest_admin_email = ENV.fetch("GUEST_ADMIN_EMAIL", "guest_admin@example.com")
+  guest_user_email  = ENV.fetch("GUEST_USER_EMAIL",  "guest_user@example.com")
+
+  # ゲスト管理者
+  ga = User.find_or_initialize_by(email: guest_admin_email)
+  if ga.new_record?
+    ga.password = ENV.fetch("GUEST_ADMIN_PASSWORD", "GuestAdminPass-1234")
+  end
+  ga.admin = true
+  ga.name  = "ゲスト管理者" if ga.respond_to?(:name) && ga.name.blank?
+  ga.save!
+
+  # ゲスト一般ユーザー
+  gu = User.find_or_initialize_by(email: guest_user_email)
+  if gu.new_record?
+    gu.password = ENV.fetch("GUEST_USER_PASSWORD", "GuestUserPass-1234")
+  end
+  gu.admin = false
+  gu.name  = "ゲストユーザー" if gu.respond_to?(:name) && gu.name.blank?
+  gu.save!
+
+  puts "[seed] Guest users prepared: admin=#{guest_admin_email}, user=#{guest_user_email}"
+
 end

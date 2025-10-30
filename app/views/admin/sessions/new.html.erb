@@ -7,7 +7,12 @@
         <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
           <div class="card-body p-4 p-lg-5">
             <h1 class="h4 text-center mb-4">管理者ログイン</h1>
-
+            <% if flash[:alert] %>
+              <div class="alert alert-danger"><%= flash[:alert] %></div>
+            <% end %>
+            <% if flash[:notice] %>
+              <div class="alert alert-success"><%= flash[:notice] %></div>
+            <% end %>
             <%= form_with scope: :user, url: admin_session_path, method: :post, local: true do |f| %>
               <div class="mb-3">
                 <%= f.label :email, "メールアドレス", class: "form-label" %>

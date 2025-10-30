@@ -1,4 +1,6 @@
+# app/controllers/pages_controller.rb
 class PagesController < ApplicationController
-  skip_before_action :authenticate_user!, only: :home  # ← これを追加
-  def home; end
+  # ApplicationController 側の public_controller? で home は公開済み
+  def home
+  end
 end

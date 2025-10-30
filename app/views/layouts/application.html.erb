@@ -8,7 +8,6 @@
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
 
-  <!-- あなたのアプリのCSS（上書きしたい場合は Bootstrap の後でもOK） -->
   <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
 
   <!-- Bootstrap CSS -->
@@ -18,51 +17,68 @@
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
     crossorigin="anonymous">
 
-  <!-- Importmap (RailsのJS) -->
   <%= javascript_importmap_tags %>
 </head>
 
 <body>
-  <% unless content_for?(:hide_navbar) %>
- <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm px-3">
-  <div class="container-fluid">
-    <a class="navbar-brand fw-bold text-primary" href="<%= user_signed_in? ? authenticated_root_path : unauthenticated_root_path %>">けいばAI</a>
+  <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm px-3">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold text-primary" href="<%= root_path %>">けいばAI</a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu"
-            aria-controls="navbarMenu" aria-expanded="false" aria-label="メニューを開く">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu"
+              aria-controls="navbarMenu" aria-expanded="false" aria-label="メニューを開く">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-    <div class="collapse navbar-collapse" id="navbarMenu">
-      <ul class="navbar-nav me-auto mb-2 mb-md-0">
-        <li class="nav-item"><%= link_to "📊 予想", new_gemini_path, class: "nav-link" %></li>
-        <li class="nav-item"><%= link_to "📜 予想履歴", histories_path, class: "nav-link" %></li>
-        <li class="nav-item"><%= link_to "🔧 予想改善", new_improvement_path, class: "nav-link" %></li>
-      </ul>
+      <div class="collapse navbar-collapse" id="navbarMenu">
+        <ul class="navbar-nav me-auto mb-2 mb-md-0">
+          <li class="nav-item"><%= link_to "📊 予想", new_gemini_path, class: "nav-link" %></li>
+          <li class="nav-item"><%= link_to "📜 予想履歴", histories_path, class: "nav-link" %></li>
+          <li class="nav-item"><%= link_to "🔧 予想改善", new_improvement_path, class: "nav-link" %></li>
+        </ul>
 
-      <ul class="navbar-nav ms-auto mb-2 mb-md-0">
-        <% if user_signed_in? %>
-          <% if current_user.admin? %>
-            <li class="nav-item"><%= link_to "ユーザー管理", admin_users_path, class: "nav-link" %></li>
+        <ul class="navbar-nav ms-auto mb-2 mb-md-0 align-items-center">
+          <% if user_signed_in? %>
+            <% if current_user.admin? %>
+              <!-- ▼ 修正：ユーザー管理ボタン化 -->
+              <li class="nav-item me-2">
+                <%= link_to "ユーザー管理", admin_users_path, class: "btn btn-sm btn-outline-primary" %>
+              </li>
+              <!-- ▲ ここまで -->
+            <% end %>
+
+            <!-- ユーザーのメールアドレス表示 -->
+            <li class="nav-item me-2 d-flex align-items-center">
+              <span class="navbar-text small text-muted">
+                <%= current_user.email %>
+              </span>
+            </li>
+
+            <li class="nav-item">
+              <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "btn btn-sm btn-outline-secondary ms-2" %>
+            </li>
+          <% else %>
+            <li class="nav-item me-2">
+              <%= link_to "ログイン", new_user_session_path, class: "btn btn-sm btn-primary" %>
+            </li>
+            <li class="nav-item me-2">
+              <%= button_to "ゲスト管理者でログイン", guest_admin_login_path, method: :post, class: "btn btn-sm btn-outline-danger" %>
+            </li>
+            <li class="nav-item">
+              <%= button_to "ゲストユーザーでログイン", guest_user_login_path, method: :post, class: "btn btn-sm btn-outline-success" %>
+            </li>
           <% end %>
-          <li class="nav-item">
-            <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "btn btn-sm btn-outline-secondary ms-2" %>
-          </li>
-        <% else %>
-          <li class="nav-item"><%= link_to "ログイン", new_user_session_path, class: "btn btn-sm btn-primary" %></li>
-        <% end %>
-      </ul>
+        </ul>
+      </div>
     </div>
-  </div>
-</nav>
-<% end %>
+  </nav>
 
-  <!-- ここが各ページの“絵”を差し込む額縁 -->
   <main class="container py-4">
+    <%= render "shared/flash" rescue nil %>
     <%= yield %>
   </main>
 
-  <!-- Bootstrap JS（トグラー用に bundle を末尾で読み込み）-->
+  <!-- Bootstrap JS -->
   <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
