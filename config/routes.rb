@@ -1,7 +1,7 @@
 # config/routes.rb
 Rails.application.routes.draw do
-  # Devise
-  devise_for :users
+  # Devise（Sessions を users/sessions に差し替え）
+  devise_for :users, controllers: { sessions: "users/sessions" }
 
   # ルートは常に pages#home（未ログイン/ログイン済みを問わず）
   root to: "pages#home"
@@ -17,7 +17,7 @@ Rails.application.routes.draw do
   # Histories
   resources :histories, only: %i[index show]
 
-  # === ▼ ここを差し替え（CRUDを有効化） ===
+  # Prediction Methods（CRUD + 追加アクション）
   resources :prediction_methods do
     post :activate, on: :member
     collection do
@@ -25,7 +25,6 @@ Rails.application.routes.draw do
       post :revert
     end
   end
-  # === ▲ 差し替えここまで ===
 
   # Improvements
   resources :improvements, only: %i[new create] do
@@ -51,7 +50,7 @@ Rails.application.routes.draw do
   # 管理者トップ（RailsAdmin を使う想定）
   get "admin", to: redirect("/ra"), as: :admin_root
 
-  # ゲストログイン
-  post "/guest_login/admin", to: "guest_sessions#admin", as: :guest_admin_login
-  post "/guest_login/user",  to: "guest_sessions#user",  as: :guest_user_login
+  # ▼ ゲストログイン（Users::SessionsController に集約）
+  post "/guest_login/admin", to: "users/sessions#guest_admin", as: :guest_admin_login
+  post "/guest_login/user",  to: "users/sessions#guest_user",  as: :guest_user_login
 end
