@@ -5,11 +5,12 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   has_many :prediction_histories, dependent: :nullify
+  has_many :messages,             dependent: :nullify
 
-  # ▼ ここを :destroy に変更（ユーザー削除時に紐づくメッセージも削除）
-  has_many :messages, dependent: :destroy
+  # ▼ ブログはユーザー削除時に user_id を NULL にする
+  has_many :blogs, dependent: :nullify
 
-  # ▼（既存）ゲスト関連メソッドはそのまま
+  # ▼（既存）ゲスト関連メソッド
   def self.guest_admin
     find_or_create_by!(email: ENV.fetch("GUEST_ADMIN_EMAIL", "guest_admin@example.com")) do |u|
       u.password = SecureRandom.urlsafe_base64(16)

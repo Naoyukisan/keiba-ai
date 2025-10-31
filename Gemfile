@@ -81,3 +81,5 @@ group :test do
   gem "selenium-webdriver"   # 将来 E2E を増やす想定（今は rack_test でOK）
   gem "webdrivers"           # Chrome 系を使うときだけ自動DL
 end
+
+gem "cssbundling-rails"

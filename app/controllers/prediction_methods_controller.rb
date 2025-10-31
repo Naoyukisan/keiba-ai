@@ -1,9 +1,16 @@
 # app/controllers/prediction_methods_controller.rb
+require "set"
+
 class PredictionMethodsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_prediction_method, only: %i[show edit update destroy activate]
   # ★ new/create と activate 系だけ管理者に制限（編集・削除は一般ユーザーも可）
   before_action :require_admin_for_admin_actions, only: %i[new create activate activate_previous revert]
+
+  # --- Rails 8 対策: action_methods を明示（create が見えなくなる誤検出の回避） ---
+  def self.action_methods
+    super + Set.new(%w[index show new create edit update destroy activate activate_previous revert])
+  end
 
   # GET /prediction_methods
   def index
@@ -82,10 +89,13 @@ class PredictionMethodsController < ApplicationController
     @prediction_method = PredictionMethod.find(params[:id])
   end
 
-  # 一般ユーザーは :active を更新できないようにする
+  # 一般ユーザーは :active/:enabled を更新できないようにする
   def prediction_method_params
     permitted = [:name, :body]
-    permitted << :active if current_user&.admin?
+    if current_user&.admin?
+      # フォームは :active、リクエストSpecは :enabled を送るので両方許可
+      permitted += [:active, :enabled]
+    end
     params.require(:prediction_method).permit(*permitted)
   end
 

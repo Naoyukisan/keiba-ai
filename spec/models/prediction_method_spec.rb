@@ -7,7 +7,7 @@ RSpec.describe PredictionMethod, type: :model do
   end
 
   describe "バリデーション" do
-    it "name は必須" do   # ← カラムに合わせて変更
+    it "name は必須" do
       pm = build(:prediction_method, name: nil)
       expect(pm).to be_invalid
       expect(pm.errors[:name]).to be_present
@@ -15,10 +15,13 @@ RSpec.describe PredictionMethod, type: :model do
   end
 
   describe "scope" do
-    it ".enabled で有効のみ返す" do   # ← 実装の scope 名に合わせて
-      enabled = create(:prediction_method, enabled: true)
-      _disabled = create(:prediction_method, enabled: false)
-      expect(PredictionMethod.where(enabled: true)).to include(enabled)
+    it ".enabled で有効のみ返す" do
+      enabled_pm  = create(:prediction_method, enabled: true)
+      _disabled   = create(:prediction_method, enabled: false)
+      # ← DBに enabled カラムは無いので where(enabled: true) は不可
+      #     モデルのスコープ .enabled を使う
+      expect(PredictionMethod.enabled).to include(enabled_pm)
+      expect(PredictionMethod.enabled).not_to include(_disabled)
     end
   end
 end

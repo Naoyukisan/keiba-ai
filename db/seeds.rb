@@ -121,7 +121,7 @@ ActiveRecord::Base.transaction do
   # ===== Messages =====
   say "Messages"
   if defined?(Message)
-    # messagesはroom_id/user_idがNOT NULLなので、必ず対象を用意
+    # messagesはroom_idはNOT NULL、user_idはNULL許可（削除時にSET NULL）
     room  = defined?(Room) ? (Room.first || Room.create!(name: "General")) : nil
     users = defined?(User) ? (User.limit(MIN).to_a) : []
     if room && users.any?
@@ -140,8 +140,7 @@ ActiveRecord::Base.transaction do
   end
 
   # ===== Blogs =====
-  # Blogモデルは「belongs_to :user + create時 user presence必須」だが、テーブルにuser_idが無い（schema）。
-  # そのため validation を通すと保存できない。ここでは insert_all で直接投入してテーブル件数要件を満たす。
+  # Blog は user_id（NULL許可）を持つ。必要に応じてユーザーに紐付けても良い。
   say "Blogs"
   if defined?(Blog)
     need = need_count(Blog)

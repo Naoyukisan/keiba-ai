@@ -1,0 +1,6 @@
+/*
+ *= require_self
+*/
+
+/* ここに共通のカスタムCSSだけを書きます。
+   Bootstrap は CDN で読み込むため import は不要です。 */

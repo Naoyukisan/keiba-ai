@@ -1,5 +1,18 @@
 {
+  "name": "keiba-ai",
+  "private": true,
   "dependencies": {
-    "rails_admin": "3.3.0"
+    "rails_admin": "3.3.0",
+    "bootstrap": "^5.3.3",
+    "flatpickr": "^4.6.13",
+    "@fortawesome/fontawesome-free": "^6.6.0"
+  },
+  "devDependencies": {
+    "sass": "^1.80.0"
+  },
+  "scripts": {
+    "build:css": "sass app/assets/stylesheets:app/assets/builds --no-source-map --load-path=node_modules",
+    "watch:css": "sass --watch app/assets/stylesheets:app/assets/builds --no-source-map --load-path=node_modules",
+    "heroku-postbuild": "npm run build:css"
   }
 }
